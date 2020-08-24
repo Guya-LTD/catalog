@@ -22,9 +22,9 @@ Project
     * Name:
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Cart service for Guya microservices
+        - Inventory service for Guya microservices
     * Description
-        - Cart mangement service
+        - Inventory mangement service
 """
 
 
