@@ -60,6 +60,8 @@ For a smoother work-flow on development, you can use a .env file to load the dat
 In the production environment, you just need to set the DATABASE_URL environment variable. Then you can use the command:
 
 `waitress-serve --call 'catalog:create_app'`
+OR 
+`python waitress_server.py`
 
 [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/ "Waitress") is the production WSGI server used for this project.
 

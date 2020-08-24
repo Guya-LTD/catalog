@@ -51,7 +51,7 @@ from .config import config_by_name
 from .handlers import register_handler
 
 # import all controllers
-from catalog.controller.v1 import catalog_controller
+from catalog.controller.v1 import inventory_controller
 
 # const vars
 __version__ = '0.0.1'
@@ -101,7 +101,7 @@ def load_config(app: Flask) -> None:
         test_config (dict):
     """
 
-    app.config.from_object(config_by_name[os.getenv('ENV')])
+    app.config.from_object(config_by_name[os.getenv('ENV', 'prod')])
 
 
 def init_database(app) -> None:
