@@ -1,0 +1,44 @@
+version: '3.7'
+
+networks:
+  inventory:
+    driver: ${NETWORKS_DRIVER}
+
+services:
+  mongo:
+    image: inventory/mongo
+    container_name: mongo
+    build:
+      context: .
+      dockerfile: ./mongo/Dockerfile
+      args:
+        MONGO_VERSION: ${MONGO_VERSION}
+    environment:
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - "${SERVICE_DIR}/mongo/data/db:/data/db"
+      - "${SERVICE_DIR}/mongo/init:/docker-entrypoint-initdb.d:ro"
+    ports:
+      - "2000:${MONGO_PORT}"
+    networks:
+      - inventory
+
+  inventory:
+    image: inventory/inventory
+    container_name: inventory
+    build:
+      context: ../
+      dockerfile: ./.docker/inventory/Dockerfile
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION}
+        WORK_DIR: ${WORK_DIR}
+    environment:
+      - MONGO_PORT=${MONGO_PORT}
+    volumes:
+      - '${BASE_DIR}:${WORK_DIR}'
+    ports:
+      - '${INVENTORY_PORT}:${INVENTORY_PORT}'
+    networks:
+      - inventory
