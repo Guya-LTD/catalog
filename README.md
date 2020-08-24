@@ -1,6 +1,6 @@
-# Inventory Service
+# Catalog Service
 
-Inventory Service is a Python based Microservice API
+Catalog Service is a Python based Microservice API
 
 
 ## Getting Started
@@ -48,7 +48,7 @@ In development, you can use the built-in development server with the `flask run`
 ```
 export FLASK_ENV=development (optional)
 
-export FLASK_APP=inventory (optional)
+export FLASK_APP=catalog (optional)
 
 flask run
 ```
@@ -59,7 +59,7 @@ For a smoother work-flow on development, you can use a .env file to load the dat
 
 In the production environment, you just need to set the DATABASE_URL environment variable. Then you can use the command:
 
-`waitress-serve --call 'inventory:create_app'`
+`waitress-serve --call 'catalog:create_app'`
 
 [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/ "Waitress") is the production WSGI server used for this project.
 

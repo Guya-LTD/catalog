@@ -1,11 +1,11 @@
 db.createUser(
     {
-        user : "inventory_user",
-        pwd  : "inventory_password",
+        user : "catalog_user",
+        pwd  : "catalog_password",
         roles : [
             {
                 role : "readWrite",
-                db   : "inventory_db"
+                db   : "catalog_db"
             }
         ]
     }

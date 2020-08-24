@@ -1,12 +1,12 @@
 version: '3.7'
 
 networks:
-  inventory:
+  catalog:
     driver: ${NETWORKS_DRIVER}
 
 services:
   mongo:
-    image: inventory/mongo
+    image: catalog/mongo
     container_name: mongo
     build:
       context: .
@@ -23,14 +23,14 @@ services:
     ports:
       - "2000:${MONGO_PORT}"
     networks:
-      - inventory
+      - catalog
 
-  inventory:
-    image: inventory/inventory
-    container_name: inventory
+  catalog:
+    image: catalog/catalog
+    container_name: catalog
     build:
       context: ../
-      dockerfile: ./.docker/inventory/Dockerfile
+      dockerfile: ./.docker/catalog/Dockerfile
       args:
         PYTHON_VERSION: ${PYTHON_VERSION}
         WORK_DIR: ${WORK_DIR}
@@ -39,6 +39,6 @@ services:
     volumes:
       - '${BASE_DIR}:${WORK_DIR}'
     ports:
-      - '${INVENTORY_PORT}:${INVENTORY_PORT}'
+      - '${CATALOG_PORT}:${CATALOG_PORT}'
     networks:
-      - inventory
+      - catalog

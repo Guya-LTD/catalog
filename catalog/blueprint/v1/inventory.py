@@ -22,9 +22,9 @@ Project
     * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
 
@@ -37,24 +37,14 @@ Application features:
     PEP-8 for code style
 
 
-This module provides means to perform operations on the database.
+Blueprint to organize and group, views related
+to the '/inventories' endpoint of HTTP REST API.
 """
 
-from flask import Flask
-from flask_mongoengine import MongoEngine
+from flask_restplus import Namespace
 
+from . import api
 
-# global vars
-db = MongoEngine()
+namespace = Namespace('Catalog', description = 'Catalog HTTP REST API endpoint')
 
-
-def init(app: Flask) -> None:
-    """This function initialize the datase ORM/ODM, providing a session
-    and command line to create the tables/document in the database.
-
-    Parameters:
-    ----------
-        app (flask.app.Flask): The application instance.
-    """
-    
-    db.init_app(app)
+api.add_namespace(namespace, path = '/api/v1/inventories')

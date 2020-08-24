@@ -15,7 +15,7 @@ install:
 before_script:
   - cp .env.example .env
   - sleep 15
-  - mongo inventory_db --eval 'db.createUser({user:"inventory_user",pwd:"inventory_password",roles:["readWrite"]});'
+  - mongo catalog_db --eval 'db.createUser({user:"catalog_user",pwd:"catalog_password",roles:["readWrite"]});'
 
 script:
   - pytest

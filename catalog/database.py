@@ -16,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
-
+ 
 Project
 -------
-    * Name:
+    * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory service for Guya microservices
+        - Catalog Service
     * Description
-        - Inventory mangement service
+        - Catlog Catalog Service
 """
 
 
@@ -37,19 +37,24 @@ Application features:
     PEP-8 for code style
 
 
-Exception.
+This module provides means to perform operations on the database.
 """
 
-from werkzeug.exceptions import BadRequest
+from flask import Flask
+from flask_mongoengine import MongoEngine
 
-class InvalidObjectId(BadRequest):
-    """*400* `Bad Request`
 
-    Raise if the browser sends something to the application the application
-    or server cannot handle.
+# global vars
+db = MongoEngine()
+
+
+def init(app: Flask) -> None:
+    """This function initialize the datase ORM/ODM, providing a session
+    and command line to create the tables/document in the database.
+
+    Parameters:
+    ----------
+        app (flask.app.Flask): The application instance.
     """
-    def __init__(self, description=None, response=None):
-        desc = {'description': 'Resource ID is not a valid monogdb ObjectId'}
-        if description is not None:
-            desc.update(description)
-        super().__init__(description=desc, response=None)
+    
+    db.init_app(app)

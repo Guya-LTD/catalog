@@ -22,9 +22,9 @@ Project
     * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
 
@@ -37,18 +37,30 @@ Application features:
     PEP-8 for code style
 
 
-Blueprint to v1 and group, related endpoint of HTTP REST API.
+Entity.
 """
 
-from flask import Blueprint
-from flask_restplus import Api 
+from catalog.database import db
+from catalog.model.catalog import Catalog as CatalogEntity
+from .mixins.timestamp_mixin import TimestampMixin
 
 
-blueprint = Blueprint('apiv1', __name__)
+class Catalog(db.Document, CatalogEntity, TimestampMixin):
+    """Catalog ODM
+    ...
+    
+    Attributes
+    ----------
+    _id : String 
+        Auto inherated attribute, 12-byte, 24 char hexadicmal
 
-api = Api(
-    blueprint,
-    title = 'Inventory Service',
-    version = '1.0.0',
-    description = 'Catlog Inventory Service',
-)
+    catalog_id : String
+        Product id or SKU
+
+    variant_id : String
+        Sub catalog's variant
+    """
+
+    catalog_id = db.StringField(required = True)
+
+    variant_id = db.StringField()

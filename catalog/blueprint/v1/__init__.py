@@ -22,19 +22,33 @@ Project
     * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
-from flask_restplus import Namespace, fields
 
-from inventory.blueprint.v1.inventory import namespace
+"""Package details
+
+Application features:
+--------------------
+    Python 3.7
+    Flask
+    PEP-8 for code style
 
 
-class InventoryDto:
-    """Request and Respons Data Transfer Object."""
+Blueprint to v1 and group, related endpoint of HTTP REST API.
+"""
 
-    request = namespace.model('inventory_request', {})
+from flask import Blueprint
+from flask_restplus import Api 
 
-    response = namespace.model('inventory_response', {})
+
+blueprint = Blueprint('apiv1', __name__)
+
+api = Api(
+    blueprint,
+    title = 'Catalog Service',
+    version = '1.0.0',
+    description = 'Catlog Catalog Service',
+)

@@ -11,7 +11,7 @@ import pathlib
 import uuid
 import sys
 
-#from inventory import __version__
+#from catalog import __version__
 
 try: # for pip >= 10
     from pip._internal.req import parse_requirements
@@ -46,7 +46,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='Inventory Service',  # Required
+    name='Catalog Service',  # Required
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -59,7 +59,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description='Catlog Inventory Service',  # Optional
+    description='Catlog Catalog Service',  # Optional
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -87,7 +87,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url='https://github.com/Guya-LTD/inventory.git',  # Optional
+    url='https://github.com/Guya-LTD/catalog.git',  # Optional
 
     # This should be your name or the name of the organization which owns the
     # project.
@@ -135,7 +135,7 @@ setup(
 
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
-    package_dir={'': 'inventory'},  # Optional
+    package_dir={'': 'catalog'},  # Optional
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -146,7 +146,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(where='inventory'),  # Required
+    packages=find_packages(where='catalog'),  # Required
 
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
@@ -209,7 +209,7 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        'Bug Reports': 'https://github.com/Guya-LTD/inventory.git/issues',
-        'Source': 'https://github.com/Guya-LTD/inventory.git',
+        'Bug Reports': 'https://github.com/Guya-LTD/catalog.git/issues',
+        'Source': 'https://github.com/Guya-LTD/catalog.git',
     },
 )

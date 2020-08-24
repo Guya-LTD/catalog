@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 """Copyright Header Details
@@ -17,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
-
+ 
 Project
 -------
-    * Name:
+    * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
 
@@ -36,28 +35,11 @@ Application features:
     Python 3.7
     Flask
     PEP-8 for code style
-    flask-mongoengine v0.7
 
 
-flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
+Entity.
 """
 
-from datetime import datetime
-from pytz import timezone
-
-from inventory.database import db
-
-
-class TimestampMixin():
-    """Time Stamped Mixin
-
-    Attributes
-    ----------
-    created_at : DateTime
-
-    updated_at : DateTime
-    """
-
-    created_at = db.DateTimeField(default = datetime.now(timezone('Africa/Addis_Ababa')))
-
-    updated_at = db.DateTimeField(default = datetime.now(timezone('Africa/Addis_Ababa')))
+class Catalog:
+    """A Base Model Representation of Catalog Entity."""
+    pass

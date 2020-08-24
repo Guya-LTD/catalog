@@ -16,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
- 
+
 Project
 -------
-    * Name: 
+    * Name:
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog service for Guya microservices
     * Description
-        - Catlog Inventory Service
+        - Catalog mangement service
 """
 
 
@@ -37,30 +37,20 @@ Application features:
     PEP-8 for code style
 
 
-Entity.
+Exception.
 """
 
-from inventory.database import db
-from inventory.model.inventory import Inventory as InventoryEntity
-from .mixins.timestamp_mixin import TimestampMixin
+from werkzeug.exceptions import BadRequest
 
+class ValueEmpty(BadRequest):
+    """*400* `Bad Request`
 
-class Inventory(db.Document, InventoryEntity, TimestampMixin):
-    """Inventory ODM
-    ...
-    
-    Attributes
-    ----------
-    _id : String 
-        Auto inherated attribute, 12-byte, 24 char hexadicmal
-
-    catalog_id : String
-        Product id or SKU
-
-    variant_id : String
-        Sub catalog's variant
+    Raise if the browser sends something to the application the application
+    or server cannot handle.
     """
+    def __init__(self, description=None, response=None):
+        desc = {'description': 'One of the payload is empty'}
+        if description is not None:
+            desc.update(description)
+        super().__init__(description=desc, response=None)
 
-    catalog_id = db.StringField(required = True)
-
-    variant_id = db.StringField()

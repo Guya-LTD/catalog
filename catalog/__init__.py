@@ -22,9 +22,9 @@ Project
     * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
 
@@ -51,17 +51,17 @@ from .config import config_by_name
 from .handlers import register_handler
 
 # import all controllers
-from inventory.controller.v1 import inventory_controller
+from catalog.controller.v1 import catalog_controller
 
 # const vars
 __version__ = '0.0.1'
 __email__ = 'simonbelete@gmail.com'
-__title__ = 'Inventory Service'
+__title__ = 'Catalog Service'
 __author__ = 'Simon Belete'
 __keywords__ = ''
-__repo_name__ = 'Inventory Service'
-__description__ = 'Catlog Inventory Service'
-__project_name__ = 'Inventory Service'
+__repo_name__ = 'Catalog Service'
+__description__ = 'Catlog Catalog Service'
+__project_name__ = 'Catalog Service'
 
 
 def create_app(test_config: dict = {}) -> Flask:

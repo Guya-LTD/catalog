@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 """Copyright Header Details
@@ -22,9 +23,9 @@ Project
     * Name:
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory service for Guya microservices
+        - Catalog Service
     * Description
-        - Inventory mangement service
+        - Catlog Catalog Service
 """
 
 
@@ -35,22 +36,28 @@ Application features:
     Python 3.7
     Flask
     PEP-8 for code style
+    flask-mongoengine v0.7
 
 
-Exception.
+flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
-from werkzeug.exceptions import BadRequest
+from datetime import datetime
+from pytz import timezone
 
-class ValueEmpty(BadRequest):
-    """*400* `Bad Request`
+from catalog.database import db
 
-    Raise if the browser sends something to the application the application
-    or server cannot handle.
+
+class TimestampMixin():
+    """Time Stamped Mixin
+
+    Attributes
+    ----------
+    created_at : DateTime
+
+    updated_at : DateTime
     """
-    def __init__(self, description=None, response=None):
-        desc = {'description': 'One of the payload is empty'}
-        if description is not None:
-            desc.update(description)
-        super().__init__(description=desc, response=None)
 
+    created_at = db.DateTimeField(default = datetime.now(timezone('Africa/Addis_Ababa')))
+
+    updated_at = db.DateTimeField(default = datetime.now(timezone('Africa/Addis_Ababa')))

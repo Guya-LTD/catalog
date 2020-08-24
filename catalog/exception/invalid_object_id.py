@@ -22,9 +22,9 @@ Project
     * Name:
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory service for Guya microservices
+        - Catalog service for Guya microservices
     * Description
-        - Inventory mangement service
+        - Catalog mangement service
 """
 
 
@@ -40,14 +40,16 @@ Application features:
 Exception.
 """
 
+from werkzeug.exceptions import BadRequest
 
-from werkzeug.exceptions import HTTPException
+class InvalidObjectId(BadRequest):
+    """*400* `Bad Request`
 
-class DocumentDoesNotExist(HTTPException):
-    code = 204
-
+    Raise if the browser sends something to the application the application
+    or server cannot handle.
+    """
     def __init__(self, description=None, response=None):
-        desc = {'description': 'Document not found from collection'}
+        desc = {'description': 'Resource ID is not a valid monogdb ObjectId'}
         if description is not None:
             desc.update(description)
         super().__init__(description=desc, response=None)

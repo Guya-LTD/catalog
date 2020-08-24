@@ -22,9 +22,9 @@ Project
     * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog Service
     * Description
-        - Catlog Inventory Service
+        - Catlog Catalog Service
 """
 
 
@@ -38,7 +38,7 @@ import logstash
 
 # const vars
 __extra__ = {
-    'app_name': 'Inventory Service',      
+    'app_name': 'Catalog Service',      
     'environment': os.getenv('ENV'),  
     'container_host': os.getenv('HOST'),
     'port': os.getenv('PORT'),

@@ -16,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
- 
+
 Project
 -------
-    * Name: 
+    * Name:
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Inventory Service
+        - Catalog service for Guya microservices
     * Description
-        - Catlog Inventory Service
+        - Catalog mangement service
 """
 
 
@@ -37,9 +37,17 @@ Application features:
     PEP-8 for code style
 
 
-Entity.
+Exception.
 """
 
-class Inventory:
-    """A Base Model Representation of Inventory Entity."""
-    pass
+
+from werkzeug.exceptions import HTTPException
+
+class DocumentDoesNotExist(HTTPException):
+    code = 204
+
+    def __init__(self, description=None, response=None):
+        desc = {'description': 'Document not found from collection'}
+        if description is not None:
+            desc.update(description)
+        super().__init__(description=desc, response=None)
