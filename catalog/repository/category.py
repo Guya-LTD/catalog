@@ -40,7 +40,7 @@ Entity.
 """
 
 from catalog.database import db
-from catalog.model.category import category as CategoryEntity
+from catalog.model.category import Category as CategoryEntity
 from .mixins.timestamp_mixin import TimestampMixin
 from .embed import Names, Assets
 
@@ -71,7 +71,7 @@ class Category(db.Document, CategoryEntity, TimestampMixin):
         Stores Images or Videos
     """
 
-    ames = db.EmbeddedDocumentField(Names)
+    names = db.EmbeddedDocumentField(Names)
     
     count = db.IntField(default = 0)
     
