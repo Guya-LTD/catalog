@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Guya-LTD/catalog.svg?branch=master)](https://travis-ci.org/Guya-LTD/catalog)
+
 # Catalog Service
 
 Catalog Service is a Python based Microservice API
