@@ -54,7 +54,7 @@ from .handlers import register_handler
 from catalog.controller.v1 import inventory_controller
 
 # const vars
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __email__ = 'simonbelete@gmail.com'
 __title__ = 'Catalog Service'
 __author__ = 'Simon Belete'
