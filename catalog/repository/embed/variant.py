@@ -45,12 +45,13 @@ Language Short Name References List:
 flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
+from catalog.model.variant import Variant as VariantEntity
 from catalog.database import db
 from catalog.repository.variant_type import VariantType
 from .dimensions import Dimensions
 
 
-class Variant(db.EmbeddedDocument):
+class Variant(db.EmbeddedDocument, VariantEntity):
     """Variant, Default Embedded Document 
 
     A Meta Class 

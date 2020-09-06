@@ -45,11 +45,12 @@ Language Short Name References List:
 flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
+from catalog.model.pricing import Pricing as PricingEntity
 from catalog.database import db
 from .dimensions import Dimensions
 
 
-class Pricing(db.EmbeddedDocument):
+class Pricing(db.EmbeddedDocument, PricingEntity):
     """Pricing, Default Embedded Document 
 
     A Meta Class 

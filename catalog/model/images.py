@@ -16,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
-
+ 
 Project
 -------
-    * Name:
+    * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Catalog service for Guya microservices
+        - Catalog Service
     * Description
-        - Catalog mangement service
+        - Catlog Catalog Service
 """
 
 
@@ -35,28 +35,11 @@ Application features:
     Python 3.7
     Flask
     PEP-8 for code style
-    flask-mongoengine v0.7
 
 
-flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
+Entity.
 """
 
-from catalog.model.descriptions import Descriptions as DescriptionsEntity
-from catalog.database import db
-
-
-class Descriptions(db.EmbeddedDocument, DescriptionsEntity):
-    """Embedded document.
-    
-    Attributes
-    ----------
-    en: String
-        English language field
-
-    am: String
-        Amharic language field
-    """
-
-    en = db.MultiLineStringField(required = True)
-
-    am = db.MultiLineStringField()
+class Images:
+    """A Base Model Representation of Images Entity."""
+    pass

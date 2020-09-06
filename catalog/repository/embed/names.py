@@ -45,10 +45,11 @@ Language Short Name References List:
 flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
+from catalog.model.names import Names as NamesEntity
 from catalog.database import db
 
 
-class Names(db.EmbeddedDocument):
+class Names(db.EmbeddedDocument, NamesEntity):
     """Embedded document.
     
     Attributes

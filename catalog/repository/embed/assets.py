@@ -45,11 +45,12 @@ Language Short Name References List:
 flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
+from catalog.model.assets import Assets as AssetsEntity
 from catalog.database import db
 from .images import Images
 
 
-class Assets(db.EmbeddedDocument):
+class Assets(db.EmbeddedDocument, AssetsEntity):
     """Assets, Default Embedded Document 
 
     A Meta Class 
