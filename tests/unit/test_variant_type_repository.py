@@ -38,13 +38,32 @@ Application features:
 """
 
 import pytest
+from faker import Faker
+
+from catalog.repository.embed import Names
+from catalog.repository.variant_type import VariantType
 
 
 class TestVariantTypeRepository():
 
+    AM_WORD_LIST = (
+        'አልማዝን', 'አየኋት', 'ከፈትኩላት', 'በሩን', 'ዘጋሁባት',
+        'አየሩ', 'ተኝቷል', 'ኢትዮጵያ', 'ውስጥ', 'ናት', 'ከተማ'
+    )
+
     def setup_class(self):
         # init faker object
         self.faker = Faker()
+        # init names of category
+        self.names = Names(
+            en = self.faker.sentence(),
+            am = self.faker.sentence(ext_word_list = self.AM_WORD_LIST)
+        )
+        # init variant type
+        self.variant_type = VariantType(names = self.names)
 
-    def test_variant_type_object_creation():
-        pass
+    def test_variant_type_object_creation(self):
+        isinstance(self.variant_type, VariantType)
+
+    def test_variant_type_object_creation_value_for_names(self):
+        assert self.variant_type.names == self.names
