@@ -41,7 +41,9 @@ Entity.
 
 from catalog.database import db
 from catalog.model.product import Product as ProductEntity
-from .embed import Names, Descriptions, Assets
+from .embed import Names, Descriptions, Assets, Shipping, Variant, Pricing
+from .category import Category
+from catalog.repository.rate import Rate
 
 
 class Product(db.Document, ProductEntity):
@@ -93,7 +95,7 @@ class Product(db.Document, ProductEntity):
 
     shipping = db.EmbeddedDocumentField(Shipping)
 
-    variants = db.EmbeddedDocumentListField(Variants)
+    variants = db.EmbeddedDocumentListField(Variant)
     
     store_id = db.StringField()
     
@@ -101,7 +103,7 @@ class Product(db.Document, ProductEntity):
 
     assets = db.EmbeddedDocumentField(Assets)
 
-    pricing = db.EmbeddedDocumentField(Price)
+    pricing = db.EmbeddedDocumentField(Pricing)
 
     rates = db.ListField(db.ReferenceField(Rate))
 

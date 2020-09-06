@@ -27,6 +27,7 @@ Project
         - Catlog Catalog Service
 """
 
+
 """Package details
 
 Application features:
@@ -39,23 +40,6 @@ Application features:
 Entity.
 """
 
-from catalog.database import db
-from catalog.repository.mixins.timestamp_mixin import TimestampMixin
-
-class Rate(db.Document, TimestampMixin):
-    """Rate ODM 
-    
-    ...
-
-    Attributes
-    ----------
-    _id : String 
-        Auto inherated attribute, 12-byte, 24 char hexadicmal
-
-    """
-
-    user_id = db.StringField()
-
-    rating = db.IntField()
-
-    product = db.ReferenceField('Product')
+class Product:
+    """A Base Model Representation of Product Entity."""
+    pass

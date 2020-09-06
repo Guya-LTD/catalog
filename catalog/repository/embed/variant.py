@@ -46,6 +46,7 @@ flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
 """
 
 from catalog.database import db
+from catalog.repository.variant_type import VariantType
 from .dimensions import Dimensions
 
 
@@ -63,6 +64,6 @@ class Variant(db.EmbeddedDocument):
     dimensions: Document
     """
     
-    variant_type = db.ReferenceField(Variant)
+    variant_type = db.ReferenceField(VariantType)
     
     value = db.StringField()
