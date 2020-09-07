@@ -54,7 +54,7 @@ from .handlers import register_handler
 from catalog.controller.v1 import category_controller, variant_type_controller
 
 # const vars
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 __email__ = 'simonbelete@gmail.com'
 __title__ = 'Catalog Service'
 __author__ = 'Simon Belete'
