@@ -29,15 +29,15 @@ Project
 
 from flask_restplus import Namespace, fields
 
-from catalog.blueprint.v1.category import namespace
-from catalog.dto import _Names, _Images, _Response
+from catalog.blueprint.v1.variant_type import namespace
+from catalog.dto import _Names, _Response
 
-class CategoryDto:
+class VariantTypeDto:
     """Request and Respons Data Transfer Object."""
 
-    request = namespace.model('category_request', {
+    request = namespace.model('variant_type_request', {
         'names': fields.Nested(_Names),
-        'image': fields.Nested(_Images)
+        'unit': fields.String()
     })
 
-    response = namespace.model('category_response', {})#_Response)
+    response = namespace.model('variant_type_response', _Response)

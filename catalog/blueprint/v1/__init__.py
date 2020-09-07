@@ -43,6 +43,7 @@ Blueprint to v1 and group, related endpoint of HTTP REST API.
 from flask import Blueprint
 from flask_restplus import Api 
 
+from catalog.dto import *
 
 blueprint = Blueprint('apiv1', __name__)
 
@@ -52,3 +53,5 @@ api = Api(
     version = '1.0.0',
     description = 'Catlog Catalog Service',
 )
+
+api.add_namespace(GNS)

@@ -27,6 +27,7 @@ Project
         - Catlog Catalog Service
 """
 
+
 """Package details
 
 Application features:
@@ -36,32 +37,14 @@ Application features:
     PEP-8 for code style
 
 
-Entity.
+Blueprint to organize and group, views related
+to the '/inventories' endpoint of HTTP REST API.
 """
 
-from catalog.database import db
-from catalog.model.category import Category as CategoryEntity
-from .mixins.timestamp_mixin import TimestampMixin
-from .embed import Names
+from flask_restplus import Namespace
 
+from . import api
 
-class VariantType(db.Document, CategoryEntity, TimestampMixin):
-    """Variant ODM 
-    
-    ...
+namespace = Namespace('Variant Type', description = 'Variant Type HTTP REST API endpoint')
 
-    Attributes
-    ----------
-    _id : String 
-        Auto inherated attribute, 12-byte, 24 char hexadicmal
-    
-    names : Dictionary
-        Language Translation References, called with their short name
-        Example :
-            - names.en
-            - names.am
-    """
-
-    names = db.EmbeddedDocumentField(Names)
-
-    unit = db.StringField()
+api.add_namespace(namespace, path = '/api/v1/variant-types')

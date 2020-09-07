@@ -119,9 +119,9 @@ from bson import ObjectId
 from flask import request, jsonify, make_response
 from flask_restplus import Resource
 
-from catalog.dto.category_dto import CategoryDto
-from catalog.blueprint.v1.category import namespace
-from catalog.repository.category import Category
+from catalog.dto.variant_type_dto import VariantTypeDto
+from catalog.blueprint.v1.variant_type import namespace
+from catalog.repository.variant_type import VariantType
 from catalog.repository.embed import Names, Assets, Images
 from catalog.exception import ValueEmpty, InvalidObjectId, DocumentDoesNotExist
 
@@ -190,7 +190,7 @@ from catalog.exception import ValueEmpty, InvalidObjectId, DocumentDoesNotExist
 @namespace.response(508, 'Loop Detected')
 @namespace.response(510, 'Not Extended')
 @namespace.response(511, 'Network Authentication Required')
-class CategoriesResource(Resource):
+class VariantTypesResource(Resource):
     """Foobar Related Operation
 
     ...
@@ -247,7 +247,7 @@ class CategoriesResource(Resource):
 
                 filters[key] = {'$%s' % splited[0] :  value}
 
-        categories = Category.objects(__raw__ = filters).order_by(order_by).paginate( page = page, per_page = limit).items
+        variant_types = VariantType.objects(__raw__ = filters).order_by(order_by).paginate( page = page, per_page = limit).items
 
         # Return must always include the global fileds :
         # Field           Datatype        Default         Description             Examples
@@ -264,13 +264,13 @@ class CategoriesResource(Resource):
             'message': '',
             'errors': [],
             'warnings': [],
-            'datas': categories,
+            'datas': variant_types,
             'page': page,
             'limit': limit,
-            'total': Category.objects.count()
+            'total': VariantType.objects.count()
         }), 200)
 
-    @namespace.expect(CategoryDto.request, validate = True)
+    @namespace.expect(VariantTypeDto.request, validate = True)
     def post(self):
         """Save data/datas to database
 
@@ -292,26 +292,14 @@ class CategoriesResource(Resource):
             am = namespace.payload.get('names').get('am')
         )
 
-        image = Images(
-            src = namespace.payload.get('image', {}).get('src'),
-            priority = namespace.payload.get('image', {}).get('priority'),
-            height = namespace.payload.get('image', {}).get('height'),
-            width = namespace.payload.get('image', {}).get('width')
-        )
-
-        assets = Assets(
-            images = [image]
-        )
-
-        category = Category(
+        variant_type = VariantType(
             names = names,
-            count = 0,
-            assets = assets
+            unit = namespace.payload['unit']
         )
 
-        category.save()
+        variant_type.save()
 
-        if not category.id:
+        if not variant_type.id:
             namespace.abort(500)
         else:
             # Return must always include the global fileds :
@@ -329,7 +317,7 @@ class CategoriesResource(Resource):
                 'message': '',
                 'errors': [],
                 'warnings': [],
-                'datas': namespace.payload
+                'datas': variant_type
             }), 201)
 
     
@@ -397,7 +385,7 @@ class CategoriesResource(Resource):
 @namespace.response(508, 'Loop Detected')
 @namespace.response(510, 'Not Extended')
 @namespace.response(511, 'Network Authentication Required')
-class CategoryResource(Resource):
+class VariantTypeResource(Resource):
     """"Single Foobar Related Operation
 
     ...
@@ -439,7 +427,7 @@ class CategoryResource(Resource):
         # the query may be filtered by calling the QuerySet object 
         # with field lookup keyword arguments. The keys in the keyword 
         # arguments correspond to fields on the Document you are querying
-        category = Category.objects(id = id)
+        variant_type = VariantType.objects(id = id)
 
         # Return must always include the global fileds :
         # Field           Datatype        Default         Description             Examples
@@ -453,7 +441,7 @@ class CategoryResource(Resource):
         code = 200
         description = 'OK'
 
-        if not category:
+        if not variant_type:
             code = 204
             description = 'No Content'
 
@@ -463,11 +451,11 @@ class CategoryResource(Resource):
             'message': '',
             'errors': [],
             'warnings': [],
-            'datas': category
+            'datas': variant_type
         }), code)
 
 
-    @namespace.expect(CategoryDto.request, validate = True)
+    @namespace.expect(VariantTypeDto.request, validate = True)
     def put(self, id):
         """Update a data from database
 
@@ -490,7 +478,7 @@ class CategoryResource(Resource):
             raise InvalidObjectId({'payloads': [{'id': id}]})
 
         # step 2 validation: check if document exists in collection
-        if not Category.objects(id = id):
+        if not VariantType.objects(id = id):
             raise DocumentDoesNotExist({'payloads': [{'id': id}]})
 
         # start by validating request fields for extra security
@@ -503,25 +491,14 @@ class CategoryResource(Resource):
             am = namespace.payload.get('names').get('am')
         )
 
-        image = Images(
-            src = namespace.payload.get('image', {}).get('src'),
-            priority = namespace.payload.get('image', {}).get('priority'),
-            height = namespace.payload.get('image', {}).get('height'),
-            width = namespace.payload.get('image', {}).get('width')
-        )
-
-        assets = Assets(
-            images = [image]
-        )
-
-        ct = Category.objects(id = id).update(
+        vt = VariantType.objects(id = id).update(
             names = names,
-            count = 0,
-            assets = assets
+            unit = namespace.payload['unit']
         )
 
-        if ct:
-            category = Category.objects(id = id)
+        if vt:
+            variant_type = VariantType.objects(id = id)
+            #variant_type.reload()
             # Return must always include the global fileds :
             # Field           Datatype        Default         Description             Examples
             # -----           --------        -------         -----------             --------
@@ -537,7 +514,7 @@ class CategoryResource(Resource):
                 'message': 'Updated',
                 'errors': [],
                 'warnings': [],
-                'datas': category
+                'datas': variant_type
             }), 200)
 
 

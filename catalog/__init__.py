@@ -51,7 +51,7 @@ from .config import config_by_name
 from .handlers import register_handler
 
 # import all controllers
-from catalog.controller.v1 import category_controller
+from catalog.controller.v1 import category_controller, variant_type_controller
 
 # const vars
 __version__ = '0.3.0'
