@@ -115,12 +115,16 @@ Functions:
 """
 
 import ast
+from bson import ObjectId
 from flask import request, jsonify, make_response
 from flask_restplus import Resource
 
 from catalog.dto.category_dto import CategoryDto
 from catalog.blueprint.v1.category import namespace
 from catalog.repository.category import Category
+from catalog.repository.embed import Names, Assets, Images
+from catalog.exception import ValueEmpty, InvalidObjectId, DocumentDoesNotExist
+
 
 @namespace.route('')
 @namespace.response(100, 'Continue')
@@ -265,3 +269,293 @@ class CategoriesResource(Resource):
             'limit': limit,
             'total': Category.objects.count()
         }), 200)
+
+    @namespace.expect(CategoryDto.request, validate = True)
+    def post(self):
+        """Save data/datas to database
+
+        ...
+
+        Returns
+        -------
+            Json Dictionaries
+
+        """
+
+        # start by validating request fields for extra security
+        # step 1 validation: strip payloads for empty string        
+        if not namespace.payload['names']['en'].strip():
+            raise ValueEmpty({'payload': payload})
+
+        names = Names(
+            en = namespace.payload['names']['en'],
+            am = namespace.payload.get('names').get('am')
+        )
+
+        image = Images(
+            src = namespace.payload.get('image', {}).get('src'),
+            priority = namespace.payload.get('image', {}).get('priority'),
+            height = namespace.payload.get('image', {}).get('height'),
+            width = namespace.payload.get('image', {}).get('width')
+        )
+
+        assets = Assets(
+            images = [image]
+        )
+
+        category = Category(
+            names = names,
+            count = 0,
+            assets = assets
+        )
+
+        category.save()
+
+        if not category.id:
+            namespace.abort(500)
+        else:
+            # Return must always include the global fileds :
+            # Field           Datatype        Default         Description             Examples
+            # -----           --------        -------         -----------             --------
+            # code            int             201             1xx, 2xx, 3xx, 5xx
+            # description     string          Created         http code description
+            # messages        array           Null            any type of messages
+            # errors          array           Null            occured errors
+            # warnings        array           Null            can be url format
+            # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
+            return make_response(jsonify({
+                'code': 201,
+                'description': 'Created',
+                'message': '',
+                'errors': [],
+                'warnings': [],
+                'datas': namespace.payload
+            }), 201)
+
+    
+@namespace.route('/<string:id>')
+@namespace.response(100, 'Continue')
+@namespace.response(101, 'Switching Protocols')
+@namespace.response(102, 'Processing')
+@namespace.response(103, 'Early Hints (RFC 8297)')
+@namespace.response(200, 'Ok')
+@namespace.response(201, 'Created')
+@namespace.response(202, 'Accepted')
+@namespace.response(203, 'Non-Authoritative Information')
+@namespace.response(204, 'No Content')
+@namespace.response(205, 'Reset Content')
+@namespace.response(206, 'Partial Content')
+@namespace.response(207, 'Multi-Status')
+@namespace.response(208, 'Already Reported')
+@namespace.response(226, 'IM Used')
+@namespace.response(300, 'Multiple Choices')
+@namespace.response(301, 'Moved Permanently')
+@namespace.response(302, 'Found (Previously "Moved temporarily")')
+@namespace.response(303, 'See Other')
+@namespace.response(304, 'Not Modified')
+@namespace.response(305, 'Use Proxy')
+@namespace.response(306, 'Switch Proxy')
+@namespace.response(307, 'Temporary Redirect')
+@namespace.response(308, 'Permanent Redirect')
+@namespace.response(400, 'Bad  Request')
+@namespace.response(401, 'Unauthorized')
+@namespace.response(402, 'Payment Required')
+@namespace.response(403, 'Forbidden')
+@namespace.response(404, 'Not Found')
+@namespace.response(405, 'Method Not Allowed')
+@namespace.response(406, 'Not Acceptable')
+@namespace.response(407, 'Proxy Authentication Required')
+@namespace.response(408, 'Request Timeout')
+@namespace.response(409, 'Conflict')
+@namespace.response(410, 'Gone')
+@namespace.response(411, 'Length Required')
+@namespace.response(412, 'Precondition Failed')
+@namespace.response(413, 'Payload Too Large')
+@namespace.response(414, 'URI Too Long')
+@namespace.response(415, 'Unsupported Media Type')
+@namespace.response(416, 'Range Not Satisfiable')
+@namespace.response(417, 'Expection Failed')
+@namespace.response(418, 'I\'m a teapot')
+@namespace.response(421, 'Misdirected Request')
+@namespace.response(422, 'Unprocessable Entity ')
+@namespace.response(423, 'Locked')
+@namespace.response(424, 'Failed Dependency')
+@namespace.response(425, 'Too Early')
+@namespace.response(426, 'Upgrade Required')
+@namespace.response(428, 'Precondition Required')
+@namespace.response(429, 'Too Many Requests')
+@namespace.response(431, 'Request Header Fields Too Large')
+@namespace.response(451, 'Unavailable For Legal Reasons')
+@namespace.response(500, 'Internal Server Error')
+@namespace.response(501, 'Not Implemented')
+@namespace.response(502, 'Bad Gateway')
+@namespace.response(503, 'Service Unavaliable')
+@namespace.response(504, 'Gateway Timeout')
+@namespace.response(505, 'HTTP Version Not Supported')
+@namespace.response(506, 'Variant Also Negotiates')
+@namespace.response(507, 'Insufficent Storage')
+@namespace.response(508, 'Loop Detected')
+@namespace.response(510, 'Not Extended')
+@namespace.response(511, 'Network Authentication Required')
+class CategoryResource(Resource):
+    """"Single Foobar Related Operation
+
+    ...
+
+    Methods
+    -------
+    get(id:String) :
+        Get a data from database
+
+    put(id:String) :
+        Update a data from database
+
+    delete(id:String) :
+        Delete a data from database
+
+    """
+
+    def get(self, id):
+        """Get All/Semi datas from database
+
+        ...
+
+        Parameters
+        ----------
+        id : integer
+            Object Id, i.e 12-byte, 24 char hexadicmal
+
+        Returns
+        -------
+            Json Dictionaries
+
+        """
+
+        # start by validating request fields for extra security
+        # step 1 validation: valid if id is 12-hex
+        if not ObjectId.is_valid(id):
+            raise InvalidObjectId({'payloads': [{'id': id}]})
+
+        # the query may be filtered by calling the QuerySet object 
+        # with field lookup keyword arguments. The keys in the keyword 
+        # arguments correspond to fields on the Document you are querying
+        category = Category.objects(id = id)
+
+        # Return must always include the global fileds :
+        # Field           Datatype        Default         Description             Examples
+        # -----           --------        -------         -----------             --------
+        # code            int             201             1xx, 2xx, 3xx, 5xx
+        # description     string          Created         http code description
+        # messages        array           Null            any type of messages
+        # errors          array           Null            occured errors
+        # warnings        array           Null            can be url format
+        # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
+        code = 200
+        description = 'OK'
+
+        if not category:
+            code = 204
+            description = 'No Content'
+
+        return make_response(jsonify({
+            'code': code,
+            'description': description,
+            'message': '',
+            'errors': [],
+            'warnings': [],
+            'datas': [category]
+        }), code)
+
+
+    @namespace.expect(CategoryDto.request, validate = True)
+    def put(self, id):
+        """Update a data from database
+
+        ...
+
+        Parameters
+        ----------
+        id : String
+            Object Id, i.e 12-byte, 24 char hexadicmal
+
+        Returns
+        -------
+            Json Dictionaries
+
+        """
+
+        # start by validating request fields for extra security
+        # step 1 validation: valid if id is 12-hex
+        if not ObjectId.is_valid(id):
+            raise InvalidObjectId({'payloads': [{'id': id}]})
+
+        # step 2 validation: check if document exists in collection
+        if not Payment.objects(id = id):
+            raise DocumentDoesNotExist({'payloads': [{'id': id}]})
+
+        # start by validating request fields for extra security
+        # step 3 validation: strip payloads for empty string        
+        if not namespace.payload['names']['en'].strip():
+            raise ValueEmpty({'payload': payload})
+
+        names = Names(
+            en = namespace.payload['names']['en'],
+            am = namespace.payload.get('names').get('am')
+        )
+
+        image = Images(
+            src = namespace.payload.get('image', {}).get('src'),
+            priority = namespace.payload.get('image', {}).get('priority'),
+            height = namespace.payload.get('image', {}).get('height'),
+            width = namespace.payload.get('image', {}).get('width')
+        )
+
+        assets = Assets(
+            images = [image]
+        )
+
+        category = Category.objects(id = id).update(
+            names = names,
+            count = 0,
+            assets = assets
+        )
+
+        category.reload()
+
+        if isinstance(payment.id, ObjectId):
+            # Return must always include the global fileds :
+            # Field           Datatype        Default         Description             Examples
+            # -----           --------        -------         -----------             --------
+            # code            int             201             1xx, 2xx, 3xx, 5xx
+            # description     string          Created         http code description
+            # messages        array           Null            any type of messages
+            # errors          array           Null            occured errors
+            # warnings        array           Null            can be url format
+            # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
+            return make_response(jsonify({
+                'code': 200,
+                'description': 'OK',
+                'message': 'Updated',
+                'errors': [],
+                'warnings': [],
+                'datas': namespace.payload
+            }), 200)
+
+
+    def delete(self, id):
+        """Update a data from database
+
+        ...
+
+        Parameters
+        ----------
+        id : String
+            Object Id, i.e 12-byte, 24 char hexadicmal
+
+        Returns
+        -------
+            Json Dictionaries
+
+        """
+        # method not allowed
+        namespace.abort(405)

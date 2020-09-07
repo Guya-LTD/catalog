@@ -46,6 +46,11 @@ from catalog.repository.category import Category
 
 class TestCategoryApi:
 
+    AM_WORD_LIST = (
+        'አልማዝን', 'አየኋት', 'ከፈትኩላት', 'በሩን', 'ዘጋሁባት',
+        'አየሩ', 'ተኝቷል', 'ኢትዮጵያ', 'ውስጥ', 'ናት', 'ከተማ'
+    )
+
     def setup_class(self):
         # init faker object
         self.faker = Faker()
@@ -58,3 +63,81 @@ class TestCategoryApi:
         categories = self.app.get(url)
         # asserting status code
         assert categories.status_code == 200
+
+    def test_categories_post_api(self):
+        url = '/api/v1/categories'
+        data = {
+            'names': {
+                'en': self.faker.sentence(),
+                'am': self.faker.sentence(ext_word_list = self.AM_WORD_LIST)
+            },
+            'image': {
+                'src': self.faker.url(),
+                'priority': 1,
+                'height': self.faker.random_int(min=100, max=1900),
+                'width': self.faker.random_int(min=100, max=1900)
+            }
+        }
+        # calling api endpoint
+        categories = self.app.post(url, json = data)
+        # asserting status code
+        assert categories.status_code == 201
+
+    def test_categories_post_without_image(self):
+        url = '/api/v1/categories'
+        data = {
+            'names': {
+                'en': self.faker.sentence(),
+                'am': self.faker.sentence(ext_word_list = self.AM_WORD_LIST)
+            }
+        }
+        # calling api endpoint
+        categories = self.app.post(url, json = data)
+        # asserting status code
+        assert categories.status_code == 201
+
+    def test_category_get_api(self):
+        pass
+
+    def test_category_get_api_with_invalid_id(self):
+        id = self.faker.sentence()
+        url = '/api/v1/categories/%s' % id
+        # calling apis endpoint
+        category = self.app.get(url)
+        # asserting status code
+        assert category.status_code == 400
+
+    def test_category_get_api_with_empty_id(self):
+        id = self.faker.sentence()
+        url = '/api/v1/categories/%s' % id
+        # calling apis endpoint
+        category = self.app.get(url)
+        # asserting status code
+        assert category.status_code == 400
+
+    def test_category_put_api(self):
+        pass
+
+    def test_category_put_api_with_invalid_id(self):
+        id = self.faker.sentence()
+        url = '/api/v1/categories/%s' % id
+        # calling apis endpoint
+        category = self.app.put(url)
+        # asserting status code
+        assert category.status_code == 400
+
+    def test_category_put_api_with_empty_id(self):
+        id = self.faker.sentence()
+        url = '/api/v1/categories/%s' % id
+        # calling apis endpoint
+        category = self.app.put(url)
+        # asserting status code
+        assert category.status_code == 400
+
+    def test_category_delete_api(self):
+        id = self.faker.sentence()
+        url = '/api/v1/categories/%s' % id
+        # calling apis endpoint
+        category = self.app.delete(url)
+        # asserting status code
+        assert category.status_code == 405

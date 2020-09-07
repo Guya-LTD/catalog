@@ -75,7 +75,7 @@ class Category(db.Document, CategoryEntity, TimestampMixin):
     
     count = db.IntField(default = 0)
     
-    parent = db.StringField
+    parent = db.StringField()
     
     facets = db.ListField(db.StringField())
 
