@@ -1,6 +1,5 @@
 # devs
 ven/
-comment.py
 
 # mongo datas
 .docker/mongo/data/db/*.wt
