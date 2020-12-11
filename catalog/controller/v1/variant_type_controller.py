@@ -127,69 +127,6 @@ from catalog.exception import ValueEmpty, InvalidObjectId, DocumentDoesNotExist
 
 
 @namespace.route('')
-@namespace.response(100, 'Continue')
-@namespace.response(101, 'Switching Protocols')
-@namespace.response(102, 'Processing')
-@namespace.response(103, 'Early Hints (RFC 8297)')
-@namespace.response(200, 'Ok')
-@namespace.response(201, 'Created')
-@namespace.response(202, 'Accepted')
-@namespace.response(203, 'Non-Authoritative Information')
-@namespace.response(204, 'No Content')
-@namespace.response(205, 'Reset Content')
-@namespace.response(206, 'Partial Content')
-@namespace.response(207, 'Multi-Status')
-@namespace.response(208, 'Already Reported')
-@namespace.response(226, 'IM Used')
-@namespace.response(300, 'Multiple Choices')
-@namespace.response(301, 'Moved Permanently')
-@namespace.response(302, 'Found (Previously "Moved temporarily")')
-@namespace.response(303, 'See Other')
-@namespace.response(304, 'Not Modified')
-@namespace.response(305, 'Use Proxy')
-@namespace.response(306, 'Switch Proxy')
-@namespace.response(307, 'Temporary Redirect')
-@namespace.response(308, 'Permanent Redirect')
-@namespace.response(400, 'Bad  Request')
-@namespace.response(401, 'Unauthorized')
-@namespace.response(402, 'Payment Required')
-@namespace.response(403, 'Forbidden')
-@namespace.response(404, 'Not Found')
-@namespace.response(405, 'Method Not Allowed')
-@namespace.response(406, 'Not Acceptable')
-@namespace.response(407, 'Proxy Authentication Required')
-@namespace.response(408, 'Request Timeout')
-@namespace.response(409, 'Conflict')
-@namespace.response(410, 'Gone')
-@namespace.response(411, 'Length Required')
-@namespace.response(412, 'Precondition Failed')
-@namespace.response(413, 'Payload Too Large')
-@namespace.response(414, 'URI Too Long')
-@namespace.response(415, 'Unsupported Media Type')
-@namespace.response(416, 'Range Not Satisfiable')
-@namespace.response(417, 'Expection Failed')
-@namespace.response(418, 'I\'m a teapot')
-@namespace.response(421, 'Misdirected Request')
-@namespace.response(422, 'Unprocessable Entity ')
-@namespace.response(423, 'Locked')
-@namespace.response(424, 'Failed Dependency')
-@namespace.response(425, 'Too Early')
-@namespace.response(426, 'Upgrade Required')
-@namespace.response(428, 'Precondition Required')
-@namespace.response(429, 'Too Many Requests')
-@namespace.response(431, 'Request Header Fields Too Large')
-@namespace.response(451, 'Unavailable For Legal Reasons')
-@namespace.response(500, 'Internal Server Error')
-@namespace.response(501, 'Not Implemented')
-@namespace.response(502, 'Bad Gateway')
-@namespace.response(503, 'Service Unavaliable')
-@namespace.response(504, 'Gateway Timeout')
-@namespace.response(505, 'HTTP Version Not Supported')
-@namespace.response(506, 'Variant Also Negotiates')
-@namespace.response(507, 'Insufficent Storage')
-@namespace.response(508, 'Loop Detected')
-@namespace.response(510, 'Not Extended')
-@namespace.response(511, 'Network Authentication Required')
 class VariantTypesResource(Resource):
     """Foobar Related Operation
 
@@ -249,28 +186,18 @@ class VariantTypesResource(Resource):
 
         variant_types = VariantType.objects(__raw__ = filters).order_by(order_by).paginate( page = page, per_page = limit).items
 
-        # Return must always include the global fileds :
-        # Field           Datatype        Default         Description             Examples
-        # -----           --------        -------         -----------             --------
-        # code            int             201             1xx, 2xx, 3xx, 5xx
-        # description     string          Created         http code description
-        # messages        array           Null            any type of messages
-        # errors          array           Null            occured errors
-        # warnings        array           Null            can be url format
-        # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
         return make_response(jsonify({
-            'code': 200,
-            'description': 'Ok',
-            'message': '',
-            'errors': [],
-            'warnings': [],
-            'datas': variant_types,
-            'page': page,
-            'limit': limit,
-            'total': VariantType.objects.count()
+            'status_code': 200,
+            'status': 'Ok',
+            'data': variant_types,
+            'pagination': {
+                'count': VariantType.objects.count(),
+                'limit': limit,
+                'page': page
+            }
         }), 200)
 
-    @namespace.expect(VariantTypeDto.request, validate = True)
+    @namespace.expect(VariantTypeDto.request, validate = False)
     def post(self):
         """Save data/datas to database
 
@@ -312,12 +239,9 @@ class VariantTypesResource(Resource):
             # warnings        array           Null            can be url format
             # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
             return make_response(jsonify({
-                'code': 201,
-                'description': 'Created',
-                'message': '',
-                'errors': [],
-                'warnings': [],
-                'datas': variant_type
+                'status_code': 201,
+                'status': 'Created',
+                'data': variant_type
             }), 201)
 
     
@@ -446,12 +370,9 @@ class VariantTypeResource(Resource):
             description = 'No Content'
 
         return make_response(jsonify({
-            'code': code,
-            'description': description,
-            'message': '',
-            'errors': [],
-            'warnings': [],
-            'datas': variant_type
+            'status_code': code,
+            'status': description,
+            'data': variant_type
         }), code)
 
 
@@ -509,12 +430,9 @@ class VariantTypeResource(Resource):
             # warnings        array           Null            can be url format
             # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
             return make_response(jsonify({
-                'code': 200,
-                'description': 'OK',
-                'message': 'Updated',
-                'errors': [],
-                'warnings': [],
-                'datas': variant_type
+                'status_code': 200,
+                'status': 'OK',
+                'data': variant_type
             }), 200)
 
 
@@ -533,5 +451,18 @@ class VariantTypeResource(Resource):
             Json Dictionaries
 
         """
-        # method not allowed
-        namespace.abort(405)
+        # start by validating request fields for extra security
+        # step 1 validation: strip payloads for empty string
+        if not id.strip():
+           raise ValueEmpty({'payloads': {'id': id}})
+
+        # the query may be filtered by calling the QuerySet object 
+        # with field lookup keyword arguments. The keys in the keyword 
+        # arguments correspond to fields on the Document you are querying
+        variant_type = VariantType.objects(id = id).delete()
+
+        return make_response(jsonify({
+            "status_code": 200,
+            "status": "OK",
+            "message": "Variant type deleted"
+        }), 200)
