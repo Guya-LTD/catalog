@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-"""Copyright Header Details
+"""Header
 
 Copyright
 ---------
@@ -16,19 +14,18 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
-
+ 
 Project
 -------
-    * Name:
+    * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Catalog service for Guya microservices
+        - Category Service
     * Description
-        - Catalog mangement service
+        - Category namespace
 """
 
-
-"""REST namespace Controller
+"""REST API Controller
 
 Responses List :
     1xx -> :            Informational response - The request was received, continuing process
@@ -63,7 +60,7 @@ Responses List :
     4xx -> :            Client Error - The request contains bad syntax or cannot be fulfilled
         * 400           Bad  Request
         * 401           Unauthorized
-        * 402           Payment Required
+        * 402           Category Required
         * 403           Forbidden
         * 404           Not Found
         * 405           Method Not Allowed
@@ -113,85 +110,22 @@ Functions:
     * delete - return delation status
 
 """
-
-import ast
-from bson import ObjectId
 from flask import request, jsonify, make_response
 from flask_restplus import Resource
+from werkzeug.exceptions import InternalServerError
+from bson import ObjectId
 
+from catalog.repository.category import Category
 from catalog.dto.category_dto import CategoryDto
 from catalog.blueprint.v1.category import namespace
-from catalog.repository.category import Category
-from catalog.repository.embed import Names, Assets, Images
 from catalog.exception import ValueEmpty, InvalidObjectId, DocumentDoesNotExist
+from catalog.middleware.jwt_auth_middleware import JWTAuthMiddleWare
 
+from catalog.repository.embed import Names
 
 @namespace.route('')
-@namespace.response(100, 'Continue')
-@namespace.response(101, 'Switching Protocols')
-@namespace.response(102, 'Processing')
-@namespace.response(103, 'Early Hints (RFC 8297)')
-@namespace.response(200, 'Ok')
-@namespace.response(201, 'Created')
-@namespace.response(202, 'Accepted')
-@namespace.response(203, 'Non-Authoritative Information')
-@namespace.response(204, 'No Content')
-@namespace.response(205, 'Reset Content')
-@namespace.response(206, 'Partial Content')
-@namespace.response(207, 'Multi-Status')
-@namespace.response(208, 'Already Reported')
-@namespace.response(226, 'IM Used')
-@namespace.response(300, 'Multiple Choices')
-@namespace.response(301, 'Moved Permanently')
-@namespace.response(302, 'Found (Previously "Moved temporarily")')
-@namespace.response(303, 'See Other')
-@namespace.response(304, 'Not Modified')
-@namespace.response(305, 'Use Proxy')
-@namespace.response(306, 'Switch Proxy')
-@namespace.response(307, 'Temporary Redirect')
-@namespace.response(308, 'Permanent Redirect')
-@namespace.response(400, 'Bad  Request')
-@namespace.response(401, 'Unauthorized')
-@namespace.response(402, 'Payment Required')
-@namespace.response(403, 'Forbidden')
-@namespace.response(404, 'Not Found')
-@namespace.response(405, 'Method Not Allowed')
-@namespace.response(406, 'Not Acceptable')
-@namespace.response(407, 'Proxy Authentication Required')
-@namespace.response(408, 'Request Timeout')
-@namespace.response(409, 'Conflict')
-@namespace.response(410, 'Gone')
-@namespace.response(411, 'Length Required')
-@namespace.response(412, 'Precondition Failed')
-@namespace.response(413, 'Payload Too Large')
-@namespace.response(414, 'URI Too Long')
-@namespace.response(415, 'Unsupported Media Type')
-@namespace.response(416, 'Range Not Satisfiable')
-@namespace.response(417, 'Expection Failed')
-@namespace.response(418, 'I\'m a teapot')
-@namespace.response(421, 'Misdirected Request')
-@namespace.response(422, 'Unprocessable Entity ')
-@namespace.response(423, 'Locked')
-@namespace.response(424, 'Failed Dependency')
-@namespace.response(425, 'Too Early')
-@namespace.response(426, 'Upgrade Required')
-@namespace.response(428, 'Precondition Required')
-@namespace.response(429, 'Too Many Requests')
-@namespace.response(431, 'Request Header Fields Too Large')
-@namespace.response(451, 'Unavailable For Legal Reasons')
-@namespace.response(500, 'Internal Server Error')
-@namespace.response(501, 'Not Implemented')
-@namespace.response(502, 'Bad Gateway')
-@namespace.response(503, 'Service Unavaliable')
-@namespace.response(504, 'Gateway Timeout')
-@namespace.response(505, 'HTTP Version Not Supported')
-@namespace.response(506, 'Variant Also Negotiates')
-@namespace.response(507, 'Insufficent Storage')
-@namespace.response(508, 'Loop Detected')
-@namespace.response(510, 'Not Extended')
-@namespace.response(511, 'Network Authentication Required')
-class CategoriesResource(Resource):
-    """Foobar Related Operation
+class CategoryList(Resource):
+    """Category Related Operation
 
     ...
 
@@ -213,9 +147,9 @@ class CategoriesResource(Resource):
         Save data/datas to database
 
     """
-
     _LIMIT = 10
 
+    @namespace.header('Authorization', 'Jwt Token')
     def get(self):
         """Get All/Semi datas from database
 
@@ -230,7 +164,6 @@ class CategoriesResource(Resource):
             Json Dictionaries
 
         """
-
         page = int(request.args.get('page', 1))
         limit = int(request.args.get('limit', self._LIMIT))
         filters = {}
@@ -249,28 +182,19 @@ class CategoriesResource(Resource):
 
         categories = Category.objects(__raw__ = filters).order_by(order_by).paginate( page = page, per_page = limit).items
 
-        # Return must always include the global fileds :
-        # Field           Datatype        Default         Description             Examples
-        # -----           --------        -------         -----------             --------
-        # code            int             201             1xx, 2xx, 3xx, 5xx
-        # description     string          Created         http code description
-        # messages        array           Null            any type of messages
-        # errors          array           Null            occured errors
-        # warnings        array           Null            can be url format
-        # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
         return make_response(jsonify({
-            'code': 200,
-            'description': 'Ok',
-            'message': '',
-            'errors': [],
-            'warnings': [],
-            'datas': categories,
-            'page': page,
-            'limit': limit,
-            'total': Category.objects.count()
+            'status_code': 200,
+            'status': 'Ok',
+            'message': 'All Categories',
+            'data': categories,
+            'pagination': {
+                'count': Category.objects.count(),
+                'limit': limit,
+                'page': page
+            }
         }), 200)
 
-    @namespace.expect(CategoryDto.request, validate = True)
+    @namespace.expect(CategoryDto.request, validate = False)
     def post(self):
         """Save data/datas to database
 
@@ -281,124 +205,48 @@ class CategoriesResource(Resource):
             Json Dictionaries
 
         """
+        ## Categories entered a client
+
+        jwtAuthMiddleWare = JWTAuthMiddleWare(request)
+        auth = jwtAuthMiddleWare.authorize()
+        # If auth is false break and return response to client
+        # Else jwtAuthMiddleWare holds decoded users data
+        if not auth:
+            return jwtAuthMiddleWare.response
 
         # start by validating request fields for extra security
-        # step 1 validation: strip payloads for empty string        
+        # step 1 validation: strip payloads for empty string
         if not namespace.payload['names']['en'].strip():
-            raise ValueEmpty({'payload': payload})
-
+           raise ValueEmpty({'payloads': namespace.payload})
+        
         names = Names(
             en = namespace.payload['names']['en'],
             am = namespace.payload.get('names').get('am')
         )
 
-        image = Images(
-            src = namespace.payload.get('image', {}).get('src'),
-            priority = namespace.payload.get('image', {}).get('priority'),
-            height = namespace.payload.get('image', {}).get('height'),
-            width = namespace.payload.get('image', {}).get('width')
-        )
-
-        assets = Assets(
-            images = [image]
-        )
-
+        # init new category object
         category = Category(
             names = names,
             count = 0,
-            assets = assets
+            created_by = str(jwtAuthMiddleWare.user["data"]["id"])
         )
-
+        
+        # persist to db
         category.save()
 
-        if not category.id:
-            namespace.abort(500)
-        else:
-            # Return must always include the global fileds :
-            # Field           Datatype        Default         Description             Examples
-            # -----           --------        -------         -----------             --------
-            # code            int             201             1xx, 2xx, 3xx, 5xx
-            # description     string          Created         http code description
-            # messages        array           Null            any type of messages
-            # errors          array           Null            occured errors
-            # warnings        array           Null            can be url format
-            # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
+        # if persisted in to db return id
+        if isinstance(category.id, ObjectId):
             return make_response(jsonify({
-                'code': 201,
-                'description': 'Created',
-                'message': '',
-                'errors': [],
-                'warnings': [],
-                'datas': namespace.payload
+                'status_code': 201,
+                'status': 'Created'
             }), 201)
+        else:
+            raise InternalServerError({'payloads': namespace.payload, 'description': 'Server failed to save payload'})
 
-    
+
 @namespace.route('/<string:id>')
-@namespace.response(100, 'Continue')
-@namespace.response(101, 'Switching Protocols')
-@namespace.response(102, 'Processing')
-@namespace.response(103, 'Early Hints (RFC 8297)')
-@namespace.response(200, 'Ok')
-@namespace.response(201, 'Created')
-@namespace.response(202, 'Accepted')
-@namespace.response(203, 'Non-Authoritative Information')
-@namespace.response(204, 'No Content')
-@namespace.response(205, 'Reset Content')
-@namespace.response(206, 'Partial Content')
-@namespace.response(207, 'Multi-Status')
-@namespace.response(208, 'Already Reported')
-@namespace.response(226, 'IM Used')
-@namespace.response(300, 'Multiple Choices')
-@namespace.response(301, 'Moved Permanently')
-@namespace.response(302, 'Found (Previously "Moved temporarily")')
-@namespace.response(303, 'See Other')
-@namespace.response(304, 'Not Modified')
-@namespace.response(305, 'Use Proxy')
-@namespace.response(306, 'Switch Proxy')
-@namespace.response(307, 'Temporary Redirect')
-@namespace.response(308, 'Permanent Redirect')
-@namespace.response(400, 'Bad  Request')
-@namespace.response(401, 'Unauthorized')
-@namespace.response(402, 'Payment Required')
-@namespace.response(403, 'Forbidden')
-@namespace.response(404, 'Not Found')
-@namespace.response(405, 'Method Not Allowed')
-@namespace.response(406, 'Not Acceptable')
-@namespace.response(407, 'Proxy Authentication Required')
-@namespace.response(408, 'Request Timeout')
-@namespace.response(409, 'Conflict')
-@namespace.response(410, 'Gone')
-@namespace.response(411, 'Length Required')
-@namespace.response(412, 'Precondition Failed')
-@namespace.response(413, 'Payload Too Large')
-@namespace.response(414, 'URI Too Long')
-@namespace.response(415, 'Unsupported Media Type')
-@namespace.response(416, 'Range Not Satisfiable')
-@namespace.response(417, 'Expection Failed')
-@namespace.response(418, 'I\'m a teapot')
-@namespace.response(421, 'Misdirected Request')
-@namespace.response(422, 'Unprocessable Entity ')
-@namespace.response(423, 'Locked')
-@namespace.response(424, 'Failed Dependency')
-@namespace.response(425, 'Too Early')
-@namespace.response(426, 'Upgrade Required')
-@namespace.response(428, 'Precondition Required')
-@namespace.response(429, 'Too Many Requests')
-@namespace.response(431, 'Request Header Fields Too Large')
-@namespace.response(451, 'Unavailable For Legal Reasons')
-@namespace.response(500, 'Internal Server Error')
-@namespace.response(501, 'Not Implemented')
-@namespace.response(502, 'Bad Gateway')
-@namespace.response(503, 'Service Unavaliable')
-@namespace.response(504, 'Gateway Timeout')
-@namespace.response(505, 'HTTP Version Not Supported')
-@namespace.response(506, 'Variant Also Negotiates')
-@namespace.response(507, 'Insufficent Storage')
-@namespace.response(508, 'Loop Detected')
-@namespace.response(510, 'Not Extended')
-@namespace.response(511, 'Network Authentication Required')
 class CategoryResource(Resource):
-    """"Single Foobar Related Operation
+    """"Single Category Related Operation
 
     ...
 
@@ -430,44 +278,25 @@ class CategoryResource(Resource):
             Json Dictionaries
 
         """
-
         # start by validating request fields for extra security
         # step 1 validation: valid if id is 12-hex
         if not ObjectId.is_valid(id):
             raise InvalidObjectId({'payloads': [{'id': id}]})
 
-        # the query may be filtered by calling the QuerySet object 
-        # with field lookup keyword arguments. The keys in the keyword 
-        # arguments correspond to fields on the Document you are querying
-        category = Category.objects(id = id)
-
-        # Return must always include the global fileds :
-        # Field           Datatype        Default         Description             Examples
-        # -----           --------        -------         -----------             --------
-        # code            int             201             1xx, 2xx, 3xx, 5xx
-        # description     string          Created         http code description
-        # messages        array           Null            any type of messages
-        # errors          array           Null            occured errors
-        # warnings        array           Null            can be url format
-        # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
-        code = 200
-        description = 'OK'
-
-        if not category:
-            code = 204
-            description = 'No Content'
+        # retrieve a result that should be unique in the collection, use get(). 
+        # this will raise DoesNotExist if no document matches the query, 
+        # and MultipleObjectsReturned if more than one document matched the query
+        category = Category.objects.get(id = id)
 
         return make_response(jsonify({
-            'code': code,
-            'description': description,
-            'message': '',
-            'errors': [],
-            'warnings': [],
+            'status_code': 200,
+            'status': 'OK',
             'datas': category
-        }), code)
+        }), 200)
 
 
-    @namespace.expect(CategoryDto.request, validate = True)
+
+    @namespace.expect(CategoryDto.request, validate = False)
     def put(self, id):
         """Update a data from database
 
@@ -483,6 +312,12 @@ class CategoryResource(Resource):
             Json Dictionaries
 
         """
+        jwtAuthMiddleWare = JWTAuthMiddleWare(request)
+        auth = jwtAuthMiddleWare.authorize()
+        # If auth is false break and return response to client
+        # Else jwtAuthMiddleWare holds decoded users data
+        if not auth:
+            return jwtAuthMiddleWare.response
 
         # start by validating request fields for extra security
         # step 1 validation: valid if id is 12-hex
@@ -493,68 +328,44 @@ class CategoryResource(Resource):
         if not Category.objects(id = id):
             raise DocumentDoesNotExist({'payloads': [{'id': id}]})
 
-        # start by validating request fields for extra security
-        # step 3 validation: strip payloads for empty string        
+        # step 3 validation: strip payloads for empty string
         if not namespace.payload['names']['en'].strip():
-            raise ValueEmpty({'payload': payload})
+           raise ValueEmpty({'payloads': namespace.payload})
 
         names = Names(
             en = namespace.payload['names']['en'],
             am = namespace.payload.get('names').get('am')
         )
 
-        image = Images(
-            src = namespace.payload.get('image', {}).get('src'),
-            priority = namespace.payload.get('image', {}).get('priority'),
-            height = namespace.payload.get('image', {}).get('height'),
-            width = namespace.payload.get('image', {}).get('width')
-        )
-
-        assets = Assets(
-            images = [image]
-        )
-
-        ct = Category.objects(id = id).update(
+        # update sets
+        category = Category.objects(id = id).update(
             names = names,
-            count = 0,
-            assets = assets
+            updated_by = str(jwtAuthMiddleWare.user["data"]["id"])
         )
 
-        if ct:
-            category = Category.objects(id = id)
-            # Return must always include the global fileds :
-            # Field           Datatype        Default         Description             Examples
-            # -----           --------        -------         -----------             --------
-            # code            int             201             1xx, 2xx, 3xx, 5xx
-            # description     string          Created         http code description
-            # messages        array           Null            any type of messages
-            # errors          array           Null            occured errors
-            # warnings        array           Null            can be url format
-            # datas           array/json      Null            results                 [ {Row 1}, {Row 2}, {Row 3}]
+        #if isinstance(category.id, ObjectId):
+        if category:
             return make_response(jsonify({
-                'code': 200,
-                'description': 'OK',
-                'message': 'Updated',
-                'errors': [],
-                'warnings': [],
-                'datas': category
+                'status_code': 200,
+                'status': 'OK',
             }), 200)
+        else:
+            raise InternalServerError({'payloads': namespace.payload, 'description': 'Server failed to update document'})
 
 
     def delete(self, id):
-        """Update a data from database
+        # start by validating request fields for extra security
+        # step 1 validation: strip payloads for empty string
+        if not id.strip():
+           raise ValueEmpty({'payloads': {'id': id}})
 
-        ...
+        # the query may be filtered by calling the QuerySet object 
+        # with field lookup keyword arguments. The keys in the keyword 
+        # arguments correspond to fields on the Document you are querying
+        categories = Category.objects(id = id).delete()
 
-        Parameters
-        ----------
-        id : String
-            Object Id, i.e 12-byte, 24 char hexadicmal
-
-        Returns
-        -------
-            Json Dictionaries
-
-        """
-        # method not allowed
-        namespace.abort(405)
+        return make_response(jsonify({
+            "status_code": 200,
+            "status": "OK",
+            "message": "Category deleted"
+        }), 200)
