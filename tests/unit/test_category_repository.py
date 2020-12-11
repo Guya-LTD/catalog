@@ -65,7 +65,7 @@ class TestCategory():
         self.assets = Assets(images = [self.image])
         # category
         self.category = Category(names = self.names, assets = self.assets)
-
+        dsfd
 
     def test_category_object_creation(self):
         isinstance(self.category, Category)
