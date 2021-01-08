@@ -16,15 +16,15 @@ LICENSE
 Authors
 -------
     * [Simon Belete](https://github.com/Simonbelete)
-
+ 
 Project
 -------
-    * Name:
+    * Name: 
         - Guya E-commerce & Guya Express
     * Sub Project Name:
-        - Cart service for Guya microservices
+        - Catalog Service
     * Description
-        - Cart mangement service
+        - Catlog Catalog Service
 """
 
 
@@ -35,32 +35,16 @@ Application features:
     Python 3.7
     Flask
     PEP-8 for code style
-    flask-mongoengine v0.7
 
-Language Short Name References List:
------------------------------------
-    * en - For English
-    * am - For Amharich
 
-flask-mongoengine based ODM flask-mongoengine built up on pymongo engine.
+Blueprint to organize and group, views related
+to the '/inventories' endpoint of HTTP REST API.
 """
 
-from catalog.model.names import Names as NamesEntity
-from catalog.database import db
+from flask_restplus import Namespace
 
+from . import api
 
-class Names(db.EmbeddedDocument, NamesEntity):
-    """Embedded document.
-    
-    Attributes
-    ----------
-    en: String
-        English language field
+namespace = Namespace('Product', description = 'Product HTTP REST API endpoint')
 
-    am: String
-        Amharic language field
-    """
-
-    en = db.StringField(required = True)#, unique = True)
-
-    am = db.StringField()
+api.add_namespace(namespace, path = '/api/v1/products')

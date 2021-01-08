@@ -67,11 +67,11 @@ class Pricing(db.EmbeddedDocument, PricingEntity):
 
     pct_savings : Decimal
     """
-    
-    list = db.DecimalField()
 
-    retail = db.DecimalField()
+    price = db.DecimalField()
 
-    savings = db.DecimalField()
+    retail = db.DecimalField(default = 0)
 
-    pct_savings = db.DecimalField()
+    savings = db.DecimalField(default = 0)
+
+    pct_savings = db.DecimalField(default = 0)

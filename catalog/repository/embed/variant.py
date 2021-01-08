@@ -64,7 +64,11 @@ class Variant(db.EmbeddedDocument, VariantEntity):
 
     dimensions: Document
     """
+
+    variant_name = db.StringField()
     
     variant_type = db.ReferenceField(VariantType)
     
     value = db.StringField()
+
+    additional_amount = db.DecimalField(default = 0)

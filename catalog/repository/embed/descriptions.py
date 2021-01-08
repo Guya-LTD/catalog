@@ -57,6 +57,6 @@ class Descriptions(db.EmbeddedDocument, DescriptionsEntity):
         Amharic language field
     """
 
-    en = db.MultiLineStringField(required = True)
+    en = db.StringField(required = True)
 
-    am = db.MultiLineStringField()
+    am = db.StringField()

@@ -42,10 +42,11 @@ Entity.
 from catalog.database import db
 from catalog.model.category import Category as CategoryEntity
 from .mixins.timestamp_mixin import TimestampMixin
+from .mixins.user_mixin import UserMixin
 from .embed import Names, Assets
 
 
-class Category(db.Document, CategoryEntity, TimestampMixin):
+class Category(db.Document, CategoryEntity, TimestampMixin, UserMixin):
     """Categories ODM 
     
     ...

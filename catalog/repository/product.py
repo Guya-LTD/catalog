@@ -44,9 +44,10 @@ from catalog.model.product import Product as ProductEntity
 from .embed import Names, Descriptions, Assets, Shipping, Variant, Pricing
 from .category import Category
 from catalog.repository.rate import Rate
+from .mixins.timestamp_mixin import TimestampMixin
+from .mixins.user_mixin import UserMixin
 
-
-class Product(db.Document, ProductEntity):
+class Product(db.Document, ProductEntity, TimestampMixin, UserMixin):
     """Categories ODM 
     
     ...
@@ -97,7 +98,9 @@ class Product(db.Document, ProductEntity):
 
     variants = db.EmbeddedDocumentListField(Variant)
     
-    store_id = db.StringField()
+    #store_id = db.StringField()
+
+    category_name = db.StringField()
     
     category = db.ReferenceField(Category)
 
